@@ -620,7 +620,7 @@ class Traceroute
 
 		ip_addr_info.ip_addr, ip_addr_info.hostname, ip_addr_info.lat, ip_addr_info.long, ip_addr_info.mm_country, ip_addr_info.mm_city, ip_addr_info.gl_override,
 
-		as_users.num, as_users.name,
+		as_users.num, as_users.name, as_users.country_code,
 
 		ip_addr_info.flagged
 
@@ -915,7 +915,8 @@ class Traceroute
 					'latOrigin'=>$hops[$r][18],
 					'longOrigin'=>$hops[$r][19],
 					'flagged'=>$hops[$r][21],
-					'hostname'=>$hops[$r][22]
+					'hostname'=>$hops[$r][22],
+					'country_code'=>$hops[$r][23]
 				);
 
 
@@ -1265,6 +1266,8 @@ class Traceroute
 		print_r($trArr);
 		echo '</textarea>';
 */
+
+		print_r($trArr);
 		$date = md5(date('d-m-o_G-i-s'));
 		$myLogFile = $savePath."/"."_log_".$date.".csv";
 		$myLogFileWeb = $webUrl.'/gm-temp/_log_'.$date.".csv";
@@ -1290,6 +1293,12 @@ class Traceroute
 		// get tr data for all attempts only once
 		$activeTrId = $trArr[0]['id'];
 		$trDetailsAllData = Traceroute::getTraceRouteAll($activeTrId);
+
+		// exit funcion if not data is returned
+		if(count($trDetailsAllData)==0){
+			return array();
+		}
+
 /*		echo '<textarea>';
 		print_r($trArr);
 		echo '</textarea>';
@@ -1313,7 +1322,9 @@ class Traceroute
 */
 		$totHopsData = count($trDetailsAllData);
 
-		/*FIXME: why is not set?*/
+		/*FIXME: why is not set?
+		It is not set because the hop has no ip a*/
+		//print_r($trDetailsAllData);
 		$lastHop = $trDetailsAllData[$totHopsData-1]['hop'];
 
 		$firstHop = $trDetailsAllData[0]['hop'];
@@ -1379,6 +1390,7 @@ class Traceroute
 */
 
 //////////////////////////
+
 		// start loop over tr data array, where $i is an index of joined traceroute and tr_item tables
 		for($i=0;$i<count($trArr);$i++)
 		{
@@ -1481,7 +1493,8 @@ class Traceroute
 				$longOrigin,
 				$lastHopIp,
 				$trArr[$i]['flagged'],
-				$trArr[$i]['hostname']
+				$trArr[$i]['hostname'],
+				$trArr[$i]['country_code']
 			);
 
 			// write impossible distances to a CSV file: this method seems to be more secure and faster than doing in jQuery: NOTE: this is only for development version. It seems an overhead for production

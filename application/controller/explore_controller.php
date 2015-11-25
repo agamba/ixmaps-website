@@ -20,11 +20,14 @@ $starttime = $mtime;
 
 // using MaxMind to find the city of client IP address
 $myIp = $_SERVER['REMOTE_ADDR'];
+$myIp = '192.0.159.88';
 $myCity = '';
 $gi1 = geoip_open("../geoip/dat/GeoLiteCityv6.dat",GEOIP_STANDARD);
 $record1 = geoip_record_by_addr_v6($gi1,"::".$myIp);
 $myCity = ''.$record1->city;
 geoip_close($gi1);
+
+$trHtmlTable= "";
 
 //
 //$a = Traceroute::testSqlUnique($sql);
